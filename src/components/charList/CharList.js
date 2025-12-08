@@ -1,51 +1,39 @@
 import './charList.scss';
 import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
-import { MarvelService } from '../../services/marvelServices';
+import { useMarvelService } from '../../services/marvelServices';
 import { ErrorMessage } from '../errorMessage/ErrorMessage';
 import { Spinner } from '../spinner/Spinner';
 
 const CharList = ({ onCharSelected }) => {
   const [charList, setCharList] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
   const [isNewItemLoading, setIsNewItemLoading] = useState(false);
   const [offset, setOffset] = useState(0);
   const [isCharEnded, setIsCharEnded] = useState(false);
   const [selectedChar, setSelectedChar] = useState(null);
 
   const itemRefs = useRef([]);
-  const marvelService = new MarvelService();
+
+  const {isLoading, isError, getAllCharacters} = useMarvelService();
 
   useEffect(() => {
-    onRequest(offset);
+    onRequest(offset,true);
   }, []);
 
-  const onRequest = (currentOffset) => {
-    onCharListLoading();
-    marvelService
-      .getAllCharacters(currentOffset)
-      .then(onCharListLoaded)
-      .catch(onError);
-  };
+  const onRequest = (offset,initial) => {
+    initial ? setIsNewItemLoading(false) : setIsNewItemLoading(true) 
+    getAllCharacters(offset).then(onCharListLoaded)
 
-  const onCharListLoading = () => {
-    setIsNewItemLoading(true);
   };
 
   const onCharListLoaded = (newCharList) => {
     const ended = newCharList.length < 9;
 
     setCharList((list) => [...list, ...newCharList]);
-    setIsLoading(false);
+  
     setIsNewItemLoading(false);
     setOffset((prev) => prev + 9);
     setIsCharEnded(ended);
-  };
-
-  const onError = () => {
-    setIsError(true);
-    setIsLoading(false);
   };
 
   const focusOnItem = (index) => {
@@ -73,9 +61,13 @@ const CharList = ({ onCharSelected }) => {
   };
 
   const errorMessage = isError ? <ErrorMessage /> : null;
-  const spinner = isLoading ? <Spinner /> : null;
-  const content =
-    !isLoading && !isError ? (
+  const spinner =  isLoading && !isNewItemLoading ? <Spinner /> : null;
+
+
+  return (
+    <div className="char__list">
+      {errorMessage}
+      {spinner}
       <View
         charList={charList}
         onCharSelected={handleCharSelected}
@@ -83,13 +75,6 @@ const CharList = ({ onCharSelected }) => {
         selectedChar={selectedChar}
         onCharFocused={handleCharFocused}
       />
-    ) : null;
-
-  return (
-    <div className="char__list">
-      {errorMessage}
-      {spinner}
-      {content}
       <button
         className="button button__main button__long"
         onClick={() => onRequest(offset)}
@@ -110,9 +95,7 @@ const View = ({ charList, onCharSelected, itemRefs, selectedChar, onCharFocused 
           key={el.id}
           tabIndex={0}
           ref={(node) => (itemRefs.current[index] = node)}
-          className={
-            el.id === selectedChar ? 'char__item char__item_selected' : 'char__item'
-          }
+          className={el.id === selectedChar ? 'char__item char__item_selected' : 'char__item'}
           onClick={() => onCharSelected(el.id, index)}
           onFocus={() => onCharFocused(el.id)}
         >
