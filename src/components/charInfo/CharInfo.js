@@ -7,21 +7,21 @@ import { ErrorMessage } from '../errorMessage/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton';
 
 
-const CharInfo = ({ charID }) => {
+const CharInfo = ({ charId  }) => {
   const [char, setChar] = useState(null);
 
-  const {isLoading, isError, getCharacter} = useMarvelService();
+  const {isLoading, isError, getCharacter, clearError} = useMarvelService();
 
   const onCharLoaded = (charData) => setChar(charData);
   
   const updateCharInfo = () => {
-    if (!charID) return;
-    getCharacter(charID).then(onCharLoaded)
+    clearError();
+    getCharacter(charId).then(onCharLoaded)
       
   };
   useEffect(() => {
     updateCharInfo();
-  }, [charID]);
+  }, [charId]);
 
   const skeleton = char || isLoading || isError ? null : <Skeleton />;
   const errorMessage = isError ? <ErrorMessage /> : null;

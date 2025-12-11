@@ -52,7 +52,7 @@ const RandomChar = () => {
 };
 
 const View = ({ char }) => {
-  const { name, desc, thumbnail, homepage, wiki } = char;
+  const { name, description, thumbnail, homepage, wiki } = char;
 
   return (
     <div className="randomchar__block">
@@ -66,7 +66,7 @@ const View = ({ char }) => {
       <div className="randomchar__info">
         <p className="randomchar__name">{name}</p>
         <p className="randomchar__descr">
-          {desc ? desc : 'Описания нет'}
+          {description ? description : 'Описания нет'}
         </p>
         <div className="randomchar__btns">
           <a href={homepage} className="button button__main">

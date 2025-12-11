@@ -3,6 +3,8 @@ import { useMarvelService } from '../../services/marvelServices';
 import { useEffect, useState } from 'react';
 import { ErrorMessage } from '../errorMessage/ErrorMessage';
 import { Spinner } from '../spinner/Spinner';
+import { Link } from 'react-router-dom';
+
 
 const ComicsList = () => {
   const [comicsList, setComicsList] = useState([]);
@@ -10,7 +12,7 @@ const ComicsList = () => {
   const [isNewItemLoading, setIsNewItemLoading] = useState(false);
   const [isComicsEnded, setIsComicsEnded] = useState(false);
 
-  const { isLoading, isError, getAllComicses } = useMarvelService();
+  const { isLoading, isError, getAllComics  } = useMarvelService();
 
   useEffect(() => {
     onRequest(offset, true);
@@ -19,7 +21,7 @@ const ComicsList = () => {
   const onRequest = (currentOffset, initial = false) => {
     if (!initial) setIsNewItemLoading(true);
 
-    getAllComicses(currentOffset).then(onComicsListLoaded);
+    getAllComics (currentOffset).then(onComicsListLoaded);
   };
 
   const onComicsListLoaded = (newComics) => {
@@ -56,7 +58,7 @@ const View = ({ comicsList }) => {
     <ul className="comics__grid">
       {comicsList.map((el) => (
         <li className="comics__item" key={el.id} tabIndex={0}>
-          <a href="#">
+          <Link to={`/comics/${el.id}`}>
             <img
               src={el.thumbnail}
               alt={el.title}
@@ -66,7 +68,7 @@ const View = ({ comicsList }) => {
             <div className="comics__item-price">
               {typeof el.price === 'number' ? `${el.price}$` : el.price}
             </div>
-          </a>
+          </Link>
         </li>
       ))}
     </ul>

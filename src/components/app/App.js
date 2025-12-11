@@ -1,53 +1,27 @@
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+
+import {MainPage} from '../pages/MainPage';
+import {ComicsPage} from '../pages/ComicsPage';
+import {Page404} from '../pages/404';
 import AppHeader from "../appHeader/AppHeader";
-import RandomChar from "../randomChar/RandomChar";
-import CharList from "../charList/CharList";
-import CharInfo from "../charInfo/CharInfo";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import decoration from '../../resources/img/vision.png';
-import { useState } from "react";
-import ErrorBoundary from "../errorBoundary/ErrorBoundary";
-import ComicsList from "../comicsList/ComicsList";
-
-
-function App(){
-    const [selectedChar, setSelectedChar] = useState(null)
-
-    const onCharSelected = (id) => setSelectedChar(id);
+import { SingleComicPage } from '../pages/SingleComicPage';
+const App = () => {
     
     return (
         <Router>
             <div className="app">
                 <AppHeader/>
                 <main>
-                    <Switch>
-                    <Route exact path='/'>
-                        <ErrorBoundary>
-                            <RandomChar/>
-                        </ErrorBoundary>
-                        <section className="char__content">
-                            <ErrorBoundary>
-                                <CharList onCharSelected={onCharSelected}/>
-                            </ErrorBoundary>
-                            <ErrorBoundary>
-                                <CharInfo charID={selectedChar}/>
-                            </ErrorBoundary>
-                        </section>
-                    </Route>
-                    
-
-                    <Route exact path='/comics'>
-                        <ErrorBoundary>
-                            <ComicsList />
-                        </ErrorBoundary>
-                        <img className="bg-decoration" src={decoration} alt="vision"/>
-                    </Route>   
-                    </Switch>              
+                    <Routes>
+                        <Route path="/" element={<MainPage/>}/>
+                        <Route path="/comics" element={<ComicsPage/>}/>
+                        <Route path="/comics/:comicId" element={<SingleComicPage/>}/>
+                        <Route path="*" element={<Page404/>}/>
+                    </Routes>
                 </main>
             </div>
         </Router>
-       
     )
-        
 }
 
 export default App;
